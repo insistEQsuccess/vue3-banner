@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=750, user-scalable=no, viewport-fit=cover, user-scalable=0">
+  <meta name="description" content="少儿编程逐步纳入中高考">
+  <link rel="stylesheet" href="./css/index.css">
+  <title>提升逻辑思维，必学少儿编程</title>
+</head>
+<body>
+  <img style="display: none;" src="https://store.it61.cn/image/20220815/dingding01/d-1.png" alt="">
+  <div id="app">
+    <div class="container-box">
+      <div class="img-box">
+        <img src="https://store.it61.cn/image/20220815/dingding01/d-1.png" alt="">
+      </div>
+      <div class="img-box">
+        <img lazy-dom data-src="https://store.it61.cn/image/20220815/dingding01/d-2.png" src="" alt="">
+        <div class="empty-btn" @click="showFromModal=true"></div>
+      </div>
+      <div class="img-box">
+        <img lazy-dom data-src="https://store.it61.cn/image/20220815/dingding01/d-3.png" src="" alt="">
+        <div class="empty-btn" @click="showFromModal=true"></div>
+      </div>
+      <div class="img-box">
+        <img lazy-dom data-src="https://store.it61.cn/image/20220815/dingding01/d-4.png" src="" alt="">
+      </div>
+      <div class="img-box">
+        <img lazy-dom data-src="https://store.it61.cn/image/20220815/dingding01/d-5.png" src="" alt="">
+        <ul class="swipper-btn">
+          <li
+            v-for="(item, index) in swipperBtn" :key="index"
+            :class="[activeBtn === index ? 'active' : '']"
+            @click="handleActive(index)"
+          >
+            {{item}}
+          </li>
+        </ul>
+        <div class="swipper">
+          <div class="swipper-box">
+            <ul>
+              <li><img lazy-dom data-src="https://store.it61.cn/image/20220815/dingding01/s-3.png" src="" alt=""></li>
+              <li><img lazy-dom data-src="https://store.it61.cn/image/20220815/dingding01/s-1.png" src="" alt=""></li>
+              <li><img lazy-dom data-src="https://store.it61.cn/image/20220815/dingding01/s-2.png" src="" alt=""></li>
+              <li><img lazy-dom data-src="https://store.it61.cn/image/20220815/dingding01/s-3.png" src="" alt=""></li>
+              <li><img lazy-dom data-src="https://store.it61.cn/image/20220815/dingding01/s-1.png" src="" alt=""></li>
+            </ul>
+          </div>
+        </div>
+        <div class="empty-btn empty-btn5" @click="showFromModal=true"></div>
+      </div>
+      <div class="img-box">
+        <img lazy-dom data-src="https://store.it61.cn/image/20220815/dingding01/d-6.png" src="" alt="">
+      </div>
+      <div class="img-box">
+        <img lazy-dom data-src="https://store.it61.cn/image/20220815/dingding01/d-7.png" src="" alt="">
+        <div class="empty-btn" @click="showFromModal=true"></div>
+      </div>
+      <div class="img-box">
+        <img lazy-dom data-src="https://store.it61.cn/image/20220815/dingding01/d-8.png" src="" alt="">
+      </div>
+      <div class="bottom-seat"></div>
+      <div class="bottom-btn" @click="showFromModal=true">
+        <div class="btn-box btn-box1">
+          <img src="./img/btn-l-1.png" alt="">
+          <img src="./img/btn-r-1.png" alt="">
+        </div>
+        <div class="btn-box btn-box2">
+          <img src="./img/btn-l-2.png" alt="">
+          <img src="./img/btn-r-2.png" alt="">
+        </div>
+      </div>
+      <div class="form-modal" v-show="showFromModal">
+        <div class="form-box">
+          <img src="./img/close-icon.png" alt="" class="close-icon" @click="showFromModal=false">
+          <div class="select-box">
+            <input
+              type="text"
+              placeholder="台式机/笔记本/没有"
+              readonly
+              v-model.trim="formInline.equip"
+              @click="onClickEquip"
+            />
+          </div>
+          <div class="select-box identity-box">
+            <input
+              type="text"
+              placeholder="家长/学生"
+              readonly
+              v-model.trim="formInline.identify"
+              @click="onClickIden"
+            />
+          </div>
+          <div class="select-box phone-box">
+            <input
+              type="text"
+              placeholder="请输入您的手机号"
+              v-model.trim="formInline.phone"
+              @input="onPhoneInput"
+            />
+          </div>
+          <div class="select-box code-box">
+            <input
+              type="text"
+              placeholder="请输入验证码"
+              v-model.trim="formInline.code"
+            />
+          </div>
+          <div class="code-txt" @click="getPhoneCode">{{codeTxt}}</div>
+          <div class="form-submit-btn" @click="onFormSubmit"></div>
+          <div class="user-agreement">
+            <div @click="formInline.agree=!formInline.agree" :class="['user-radio']">
+              {{formInline.agree ? '&#10004' : ''}}
+            </div>
+            <span>本人同意并授权《个人信息授权与保护声明》</span>
+          </div>
+        </div>
+      </div>
+      <div class="picker-modal" v-show="showPicker" @click="showPicker = false">
+        <ul>
+          <li>请选择</li>
+          <li v-for="(item, index) in pickerOptions" :key="index"
+            @click="onConfirmPicker(item)"
+          >
+            {{item}}
+          </li>
+        </ul>
+      </div>
+      <div class="result-modal" v-show="showResult">
+        <div class="result-box">
+          <div class="message-box" v-show="showMessage">
+            <div class="result-txt">
+              {{resultMsg}}
+            </div>
+            <div class="result-btn" @click="showResult=false">知道了</div>
+          </div>
+          <div class="success-box" v-show="showSuccess">
+            <div class="result-txt">
+              报名成功
+              <br>
+              请等待老师联系您上课
+            </div>
+            <div class="result-btn" @click="showResult=false">知道了</div>
+          </div>
+          <div class="fail-box" v-show="showFail">
+            <div class="result-txt">
+              报名失败
+              <br>
+              {{resultMsg}}
+            </div>
+            <div class="result-btn" @click="showResult=false">知道了</div>
+          </div>
+          <div class="loading-box" v-show="showLoading">
+            <img class="loading-img" src="./img/loading.png" />
+            <div class="loading-txt">
+              提交中...
+            </div>
+          </div>
+          <div class="timeout-box" v-show="showTimeout">
+            <div class="loading-txt timeout-txt">
+              网络延迟
+              <br>
+              请点击下方按钮重新获取
+            </div>
+            <button class="timeout_btn" type="default" @click="onFormSubmit">查看报名结果</button>
+          </div>
+        </div>
+      </div>
+      <div class="toast-modal" v-show="showToast">
+        <span class="toast-bar toast-success" v-show="toastType==='success'">{{toastTxt}}</span>
+        <span class="toast-bar toast-warning" v-show="toastType==='warning'">{{toastTxt}}</span>
+        <span class="toast-bar toast-error" v-show="toastType==='error'">{{toastTxt}}</span>
+      </div>
+    </div>  
+  </div>
+  <!-- <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script> -->
+  <!-- <script src="https://cdn.bootcss.com/vConsole/3.3.0/vconsole.min.js"></script> -->
+  <script src="https://cdn.bootcdn.net/ajax/libs/axios/1.2.0/axios.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.37/vue.global.min.js"></script>
+  <script src="./js/index.js"></script>
+  <!-- <script>
+    window.vConsole = new window.VConsole();
+  </script> -->
+</body>
+</html>
