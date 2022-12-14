@@ -35,7 +35,7 @@ const app = Vue.createApp({
       })
     }
     const swipObj = ref()
-    const swipperBtn = reactive(['Scratch', 'Python', 'NOI'])
+    const swipperBtn = reactive(['button1', 'button2', 'button3'])
     onMounted(() => {
       viewHeight = document.documentElement.clientHeight  //可视区域的高度
       lazyFn()
@@ -169,177 +169,10 @@ const app = Vue.createApp({
       activeBtn.value = index
       swipObj.value.setActiveIndex(index + 1)
     }
-    const showToast = ref(false)
-    const toastType = ref('success')
-    const toastTxt = ref('')
-    const handleToast = (txt, type = 'success', delay = 3000) => {
-      toastType.value = type
-      toastTxt.value = txt
-      showToast.value = true
-      setTimeout(() => {
-        showToast.value = false
-      }, delay)
-    }
-    const showResult = ref(false)
-    const showFromModal = ref(false)
-    const showPicker = ref(false)
-    const pickerOptions = reactive([])
-    const formInline = reactive({
-      equip: '',
-      identify: '',
-      phone: '',
-      code: '',
-      agree: false
-    })
-    let selectKey = 'equip'
-    function onConfirmPicker (val) {
-      formInline[selectKey] = val
-      showPicker.value = false
-    }
-    function onClickEquip () {
-      selectKey = 'equip'
-      showPicker.value = true
-      pickerOptions.length = 0
-      pickerOptions.push(...['台式机', '笔记本', '没有'])
-    }
-    function onClickIden () {
-      selectKey = 'identify'
-      showPicker.value = true
-      pickerOptions.length = 0
-      pickerOptions.push(...['家长', '学生'])
-    }
-    let codeNum = 60
-    let codeTimer = null
-    const codeTxt = ref('获取验证码')
-    async function getPhoneCode () {
-      if (!formInline.phone) return
-      if (codeNum < 60) return
-      codeTimer = setInterval(() => {
-        if(codeNum <= 0) {
-          codeNum = 60
-          codeTxt.value = `获取验证码`
-          clearInterval(codeTimer)
-          return
-        }
-        codeNum--
-        codeTxt.value = `倒计时${codeNum}秒`
-      }, 1000)
-      const fd = new FormData()
-      fd.append('mobile', formInline.phone)
-      axios.post(
-        baseUrlCode + '/payquickunderline/openapi/getPhoneCode',
-        fd,
-        { headers: { 'content-type': 'pplication/x-www-form-urlencoded' } }
-      ).then(({data: res}) => {
-        handleToast(res.msg || res.data, res.status === 1 ? 'success' : 'error')
-      })
-    }
-    function onPhoneInput () {
-      if(!formInline.equip){
-        formInline.phone = ''
-        handleToast('请先选择设备类型', 'warning')
-      }else if (!formInline.identify){
-        formInline.phone = ''
-        handleToast('请先选择您的身份', 'warning')
-      }else if (formInline.equip === '没有') {
-        formInline.phone = ''
-        handleToast('没有设备不能领取哦', 'warning')
-      }else if (!formInline.agree) {
-        formInline.phone = ''
-        handleToast('请先勾选授权协议', 'warning')
-      }
-    }
-    const showLoading = ref(false)
-    const showTimeout = ref(false)
-    const showSuccess = ref(false)
-    const showFail = ref(false)
-    const showMessage = ref(false)
-    const resultMsg = ref('')
-    async function onFormSubmit () {
-      if (!formInline.phone) {
-        return handleToast('请填写手机号', 'warning')
-      }
-      if (!/\d/g.test(formInline.code)) {
-        return handleToast('请填写验证码', 'warning')
-      }
-      showLoading.value = true;
-      showResult.value = true;
-      showFromModal.value = false;
-      showTimeout.value = false;
-      const param = {
-        telphone: formInline.phone,
-        regType: 'EXP2021',
-        sourceUrl: window.location.href,
-        rsTag: '1',
-        studentName: `请选择您的设备类型：${formInline.equip},${formInline.identify}`
-      }
-      const data = await axios.post(
-        baseUrl + '/c/business/v1/information',
-        param,
-        { headers: { 'content-type': 'application/json' } }
-      )
-      const res = data.data
-      if (!res) return
-      if (res.code == 10011) {
-        showLoading.value = false;
-        resultMsg.value = '服务异常，请稍后重试。'
-        showMessage.value = true
-      } else if (res.code == 0) {
-        showLoading.value = false;
-        resultMsg.value = res.data.status == 1 ? '报名成功' : res.data.status == 2 ? '报名成功' : '您的手机号已领取过此课程，无法重复领取';
-        showMessage.value = true
-      } else {
-        showLoading.value = false;
-        resultMsg.value = '网络异常，请稍后再试';
-        showMessage.value = true
-      }
-    }
-    let againTimes = 1
-    let loadingTimer = null
-    // 每5秒请求一次
-    watch(
-      () => showLoading.value,
-      (to) => {
-				if (to) {
-					loadingTimer = setTimeout(() => {
-						showLoading.value = false;
-						if (againTimes >= 3) {
-							againTimes = 1
-							return showSuccess.value = true
-						}
-            againTimes++
-						showTimeout.value = true;
-					}, 5000)
-				} else {
-					clearTimeout(loadingTimer)
-				}
-			}
-    )
     return {
-      resultMsg,
-      showMessage,
-      showSuccess,
-      showFail,
-      showLoading,
-      showTimeout,
       activeBtn,
       swipperBtn,
-      handleActive,
-      formInline,
-      pickerOptions,
-      showPicker,
-      onConfirmPicker,
-      onClickEquip,
-      onClickIden,
-      codeTxt,
-      getPhoneCode,
-      onFormSubmit,
-      showFromModal,
-      showResult,
-      showToast,
-      toastType,
-      toastTxt,
-      onPhoneInput,
+      handleActive
     }
   }
 })
